@@ -29,6 +29,24 @@ def save_config(config_data):
         return json.dump(config_data, config_file)
 
 
+# Source: https://stackoverflow.com/a/57561744
+def set_var_config(key_string, value):
+    """Given 'platforms.htb', 'path/to/folder', set config_data['platforms']['htb'] = 'path/to/folder'"""
+
+    config_data = load_config()
+    keys = key_string.split(".")
+
+    # For every key *before* the last one, we concentrate on navigating through the dictionary.
+    for key in keys[:-1]:
+        # Try to find here[key]. If it doesn't exist, create it with an empty dictionary. Then,
+        # update our `here` pointer to refer to the thing we just found (or created).
+        config_data = config_data.setdefault(key, {})
+
+    # Finally, set the final key to the given value
+    config_data[keys[-1]] = value
+    save_config(config_data)
+
+
 console = Console()
 config_data = load_config()
 
@@ -80,7 +98,7 @@ def main():
     parser_new.add_argument('--box', '-b', required=True, type=str, dest='ctf_name', help='Name of the CTF Box')
     parser_new.add_argument('--rhost', '-r', required=True, type=str, help='$rhost IP address')
     parser_new.add_argument('--domain', '-d', required=True, type=str, help='Domain Name')
-    parser_new.add_argument('--platform', '-p', required=True, type=str, help='Platform Name')
+    parser_new.add_argument('--platform', '-p', required=True, type=str, choices=config_data['platforms'].keys(), help='Platform Name')
     parser_new.add_argument('--active', '-a', default='active', choices=['active', 'dead'], help='Status of the CTF (active/dead)')
 
     parser_get = subparsers.add_parser('get', help='Get CTF box info')
@@ -104,24 +122,23 @@ def main():
     if args.command == 'config':
         if args.set:
             path, var = args.set
-            global config_data  # 'cause we are going to change the variable
-            config_data[path] = var
-            save_config(config_data)
+            set_var_config(path, var)
             exit(0)
         if args.print:
             print(json.dumps(config_data, indent=4))
             exit(0)
 
     # Check if the user changed htm and thm paths
-    if not (os.path.exists(config_data['thm_path']) and os.path.exists(config_data['htb_path'])):
-        console.print(f"""Before starting set the correct valuables for 'htb_path' and 'thm_path'
+    if not (os.path.exists(config_data['platforms']['thm']) and
+            os.path.exists(config_data['platforms']['htb'])):
+        console.print(f"""First of all, set the correct paths for 'HTB' and 'THM folders.'
 Current valuables are:
-    htb_path: {config_data['htb_path']}
-    thm_path: {config_data['thm_path']}
-        
+    htb_path: {config_data['platforms']['htb']}
+    thm_path: {config_data['platforms']['thm']}
+
 To change them use:
-    ayo config --set htb_path <value>
-    ayo config --set thm_path <value>
+    ayo config --set platforms.htb <value>
+    ayo config --set platforms.thm <value>
 """)
         exit(0)
 
@@ -137,8 +154,6 @@ To change them use:
 
 def new_box(args):
     console.print(f"[green][+] Adding a new box '{args.ctf_name}'...[/]")
-    htb_list = ["htb", "HackTheBox", "HTB", "HACKTHEBOX"]
-    thm_list = ["thm", "TryHackMe", "THM", "TRYHACKME"]
     data = get_box_data()
 
     data['current_box'] = args.ctf_name
@@ -166,11 +181,7 @@ def new_box(args):
     
     create_dir = console.input(f"[green]Create a directory for {args.ctf_name}? (y/n): [/]")
     if create_dir in ["y", "yes"]:
-
-        if args.platform in htb_list:
-            ctf_path = os.path.join(config_data['htb_path'], args.ctf_name)
-        elif args.platform in thm_list:
-            ctf_path = os.path.join(config_data['thm_path'], args.ctf_name)
+        ctf_path = os.path.join(args.platform, args.ctf_name)
 
         try:
             os.makedirs(ctf_path)

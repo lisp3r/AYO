@@ -1,1 +1,6 @@
-{"htb_path": "/home/user/htb", "thm_path": "/home/user/thm"}
+{
+  "platforms": {
+    "htb": "/home/user/htb",
+    "thm": "/home/user/thm"
+  }
+}
