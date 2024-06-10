@@ -5,24 +5,32 @@
 > Store box data and receive them instantly 
 """
 
-
-import time 
 import os
 import sys
 import argparse 
 import json
-import getpass 
+
+import python_hosts.exception
 from python_hosts import Hosts, HostsEntry
 from rich.console import Console 
-from rich.table import Table 
+from rich.table import Table
 
 
- 
-hosts = Hosts(path='/etc/hosts')
+data_file = os.path.join(os.getcwd(), "machine_data.json")
+
+
+def load_config():
+    with open(os.path.join(os.getcwd(), 'config.json'), 'r') as config_file:
+        return json.load(config_file)
+
+
+def save_config(config_data):
+    with open(os.path.join(os.getcwd(), 'config.json'), 'w') as config_file:
+        return json.dump(config_data, config_file)
+
+
 console = Console()
-data_file = "/home/treveen/Documents/ayo/machine_data.json"
-htb_path = "/home/treveen/htb"
-thm_path = "/home/treveen/thm"
+config_data = load_config()
 
 
 def banner():
@@ -37,24 +45,20 @@ def banner():
 [/]                                              
 """)
 
-def get_box_data():
-    global data_file 
 
+def get_box_data():
     with open(data_file, 'r') as file:
-        data = json.load(file)
-    return data
+        return json.load(file)
 
 
 def print_box_info():
-    global data_file 
-
     with open(data_file, 'r') as file:
         data = json.load(file)
-        current_box = data['current_box']
-        status = data['status']
-        rhost = data['rhost']
-        domain = data['domain']
-        platform = data['platform']
+    current_box = data['current_box']
+    status = data['status']
+    rhost = data['rhost']
+    domain = data['domain']
+    platform = data['platform']
 
     table = Table(title="AYO - CTF Manager") 
     table.add_column("BOX", style="blue")
@@ -63,15 +67,12 @@ def print_box_info():
     table.add_column("PLATFORM", style="blue") 
     table.add_column("STATUS", style="blue") 
 
-    banner()
+    # banner()
     table.add_row(current_box, rhost, domain, platform, status)
     console.print(table) 
 
 
 def main():
-    global data_file 
-    global args
-
     parser = argparse.ArgumentParser(description='AYO - CTF Manager [Help Menu]')
     subparsers = parser.add_subparsers(dest='command', help='Update or get data')
 
@@ -89,7 +90,42 @@ def main():
     parser_set.add_argument('--var', type=str, help='Variable to set')
     parser_set.add_argument('--value', type=str, help='Value to set')
 
+    parser_conf = subparsers.add_parser('config', help='Configure AYO')
+    parser_conf.add_argument('--set', type=str, nargs=2, help='Set a variable into config')
+    parser_conf.add_argument('--print', action="store_true", help='Print config')
+
     args = parser.parse_args()
+
+    if args.command is None:
+        banner()
+        parser.print_help()
+        exit(0)
+
+    if args.command == 'config':
+        if args.set:
+            path, var = args.set
+            global config_data  # 'cause we are going to change the variable
+            config_data[path] = var
+            save_config(config_data)
+            exit(0)
+        if args.print:
+            print(json.dumps(config_data, indent=4))
+            exit(0)
+
+    # Check if the user changed htm and thm paths
+    if not (os.path.exists(config_data['thm_path']) and os.path.exists(config_data['htb_path'])):
+        console.print(f"""Before starting set the correct valuables for 'htb_path' and 'thm_path'
+Current valuables are:
+    htb_path: {config_data['htb_path']}
+    thm_path: {config_data['thm_path']}
+        
+To change them use:
+    ayo config --set htb_path <value>
+    ayo config --set thm_path <value>
+""")
+        exit(0)
+
+    banner()
 
     if args.command == 'new':
         new_box(args)
@@ -100,10 +136,7 @@ def main():
 
 
 def new_box(args):
-    global data_file 
-    global htb_path
-    global thm_path
-
+    console.print(f"[green][+] Adding a new box '{args.ctf_name}'...[/]")
     htb_list = ["htb", "HackTheBox", "HTB", "HACKTHEBOX"]
     thm_list = ["thm", "TryHackMe", "THM", "TRYHACKME"]
     data = get_box_data()
@@ -117,18 +150,26 @@ def new_box(args):
     with open(data_file, 'w') as file:
         json.dump(data, file, indent=4)
 
+    console.print(f"[green][+] Adding '{args.rhost}  {args.domain}' into /etc/hosts...[/]")
+
     new_box = HostsEntry(entry_type='ipv4', address=args.rhost, names=[args.domain])
+    hosts = Hosts(path='/etc/hosts')
     hosts.add([new_box])
-    hosts.write()
+
+    try:
+        hosts.write()
+    except python_hosts.exception.UnableToWriteHosts:
+        console.print(f'[red][!] Cannot write to /etc/hosts: Permission denied')
+        exit(1)
 
     print_box_info()
     
     create_dir = console.input(f"[green]Create a directory for {args.ctf_name}? (y/n): [/]")
-    if create_dir == "y" or create_dir == "yes":
+    if create_dir in ["y", "yes"]:
         if args.platform in htb_list:
-            ctf_path = os.path.join(htb_path, args.ctf_name) 
+            ctf_path = os.path.join(config_data['htb_path'], args.ctf_name)
         elif args.platform in thm_list:
-            ctf_path = os.path.join(thm_path, args.ctf_name) 
+            ctf_path = os.path.join(config_data['thm_path'], args.ctf_name)
 
         try:
             os.makedirs(ctf_path)
@@ -153,6 +194,7 @@ def get_info(args):
     else:
         console.print(f"[red][-] Unsupported info: {args.info} [/]")
 
+
 def set_info(args):
     global data_file 
 
@@ -167,6 +209,7 @@ def set_info(args):
     else:
         console.print("[red][-] Please provide both [bold]--var[/] and [bold]--value arguments[/][red] for setting a variable [/]")
         sys.exit()
+
 
 if __name__ == "__main__":
     main()
