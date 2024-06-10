@@ -39,16 +39,24 @@ init() {
 
 install() {
     echo -e "[${GREEN}+${RESET}] Downloading AYO..."
-    wget https://raw.githubusercontent.com/lisp3r/AYO/main/src/main.py -O "$AYO_DIR/main.py"
-    wget https://raw.githubusercontent.com/lisp3r/AYO/main/src/machine_data.json -O "$AYO_DIR/machine_data.json"
-    wget https://raw.githubusercontent.com/lisp3r/AYO/main/src/config.json -O "$AYO_DIR/config.json"
+    wget -q https://raw.githubusercontent.com/lisp3r/AYO/main/src/main.py -O "$AYO_DIR/main.py" || {
+      echo -e "[${RED}-${RESET}] Unable to download main.py, exiting..."; exit 1
+    }
+    wget -q https://raw.githubusercontent.com/lisp3r/AYO/main/machine_data.json -O "$AYO_DIR/machine_data.json" || {
+      echo -e "[${RED}-${RESET}] Unable to download machine_data.json, exiting..."; exit 1
+    }
+    wget -q https://raw.githubusercontent.com/lisp3r/AYO/main/config.json -O "$AYO_DIR/config.json" || {
+      echo -e "[${RED}-${RESET}] Unable to download config.json, exiting..."; exit 1
+    }
 
+    echo -e "[${GREEN}+${RESET}] Creating a soft link..."
     sudo ln -s "$AYO_DIR/main.py" "/usr/bin/ayo"
     sudo chmod +x /usr/bin/ayo
 }
 
 end() {
     echo -e "[${GREEN}+${RESET}] Happy Hacking!"
+    echo -e "\nUsage: ayo -h\n"
 }
 
 banner
