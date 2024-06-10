@@ -25,7 +25,7 @@ def load_config():
 
 
 def save_config(config_data):
-    with open(os.path.join(os.getcwd(), 'config.json'), 'w') as config_file:
+    with open(os.path.join(dir_path, 'config.json'), 'w') as config_file:
         return json.dump(config_data, config_file)
 
 
@@ -77,11 +77,11 @@ def main():
     subparsers = parser.add_subparsers(dest='command', help='Update or get data')
 
     parser_new = subparsers.add_parser('new', help='Add new CTF box')
-    parser_new.add_argument('--box', '-b', type=str, dest='ctf_name', help='Name of the CTF Box')
-    parser_new.add_argument('--rhost', '-r', type=str, help='$rhost IP address')
-    parser_new.add_argument('--domain', '-d', type=str, help='Domain Name')
-    parser_new.add_argument('--platform', '-p', type=str, help='Platform Name')
-    parser_new.add_argument('--active', '-a', choices=['active', 'dead'], help='Status of the CTF (active/dead)')
+    parser_new.add_argument('--box', '-b', required=True, type=str, dest='ctf_name', help='Name of the CTF Box')
+    parser_new.add_argument('--rhost', '-r', required=True, type=str, help='$rhost IP address')
+    parser_new.add_argument('--domain', '-d', required=True, type=str, help='Domain Name')
+    parser_new.add_argument('--platform', '-p', required=True, type=str, help='Platform Name')
+    parser_new.add_argument('--active', '-a', default='active', choices=['active', 'dead'], help='Status of the CTF (active/dead)')
 
     parser_get = subparsers.add_parser('get', help='Get CTF box info')
     parser_get.add_argument('info', help='Information to retrieve')
@@ -166,6 +166,7 @@ def new_box(args):
     
     create_dir = console.input(f"[green]Create a directory for {args.ctf_name}? (y/n): [/]")
     if create_dir in ["y", "yes"]:
+
         if args.platform in htb_list:
             ctf_path = os.path.join(config_data['htb_path'], args.ctf_name)
         elif args.platform in thm_list:
