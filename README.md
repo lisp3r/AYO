@@ -5,19 +5,21 @@
 <div align="center">
   The Efficient CTF (Capture The Flag) Manager<br>
    <br>
-  <img alt="GitHub License" src="https://img.shields.io/github/license/Trevohack/AYO?style=for-the-badge&labelColor=blue&color=violet">
-  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/Trevohack/AYO?style=for-the-badge&labelColor=blue&color=violet">
+  <img alt="GitHub License" src="https://img.shields.io/github/license/lisp3r/AYO?style=for-the-badge&labelColor=blue&color=violet">
+  <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/lisp3r/AYO?style=for-the-badge&labelColor=blue&color=violet">
   <img alt="Static Badge" src="https://img.shields.io/badge/Tested--on-Linux-violet?style=for-the-badge&logo=linux&logoColor=black&labelColor=blue">
   <img alt="Static Badge" src="https://img.shields.io/badge/Bash-violet?style=for-the-badge&logo=gnubash&logoColor=black&labelColor=blue">
   <p></p>
-    <a href="https://github.com/Trevohack/AYO?tab=readme-ov-file#installation">Install</a>
+    <a href="https://github.com/lisp3r/AYO?tab=readme-ov-file#installation">Install</a>
   <span> • </span>
-       	<a href="https://github.com/Trevohack/AYO?tab=readme-ov-file#documentation">Documentation</a>
+       	<a href="https://github.com/lisp3r/AYO?tab=readme-ov-file#documentation">Documentation</a>
   <span> • </span>
-	<a href="https://github.com/Trevohack/AYO?tab=readme-ov-file#usage">Usage</a>
+	<a href="https://github.com/lisp3r/AYO?tab=readme-ov-file#usage">Usage</a>
   <p></p>
 </div>
 
+
+Original repo: [Trevohack/AYO](https://github.com/Trevohack/AYO)
 
 ## Documentation
 
@@ -89,12 +91,12 @@ curl $(ayo get domain)/rev-shell.php
 
 1. **Oneliner:**
 ```bash
- curl -sL https://raw.githubusercontent.com/Trevohack/AYO/main/setup.sh | bash
+ curl -sL https://raw.githubusercontent.com/lisp3r/AYO/main/setup.sh | bash
 ``` 
 
 2. **Clone The Repository:**  
 ```bash
-git clone https://github.com/Trevohack/AYO
+git clone https://github.com/lisp3r/AYO
 cd AYO
 pip install rich
 pip install python-hosts
