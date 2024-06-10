@@ -15,12 +15,12 @@ from python_hosts import Hosts, HostsEntry
 from rich.console import Console 
 from rich.table import Table
 
-
-data_file = os.path.join(os.getcwd(), "machine_data.json")
+dir_path = os.path.dirname(os.path.realpath(__file__))
+data_file = os.path.join(dir_path, "machine_data.json")
 
 
 def load_config():
-    with open(os.path.join(os.getcwd(), 'config.json'), 'r') as config_file:
+    with open(os.path.join(dir_path, 'config.json'), 'r') as config_file:
         return json.load(config_file)
 
 
