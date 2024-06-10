@@ -8,7 +8,9 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 RESET='\033[0m'
+ITALIC='\e[3m'
 
+AYO_DIR="$(xdg-user-dir DOCUMENTS || echo $HOME)/ayo"
 
 banner() {
     echo -e "${RED}
@@ -21,27 +23,28 @@ banner() {
   ▒   ▒▒ ░▓██ ░▒░   ░ ▒ ▒░ 
   ░   ▒   ▒ ▒ ░░  ░ ░ ░ ▒  
       ░  ░░ ░         ░ ░  
-          ░ ░              
-${RESET}"
-    read -p "Enter your username: " name
+          ░ ░
+${RESET}by ${ITALIC}@Trevohack${RESET}"
 }
 
 
 init() {
     echo -e "[${GREEN}+${RESET}] Configuring Environment..."
-    mkdir -p "/home/$name/Documents/ayo"
-    cd "/home/$name/Documents/ayo"
-    pip install rich
-    pip install python-hosts
+    mkdir -p "$AYO_DIR"
+    cd "$AYO_DIR"
+
+    # pip install rich
+    # pip install python-hosts
 }
 
 install() {
     echo -e "[${GREEN}+${RESET}] Downloading AYO..."
-    wget https://raw.githubusercontent.com/Trevohack/AYO/main/src/main.py -O "/home/$name/Documents/ayo/main.py"
-    wget https://raw.githubusercontent.com/Trevohack/AYO/main/src/machine_data.json -O "/home/$name/Documents/ayo/machine_data.json"
+    wget https://raw.githubusercontent.com/lisp3r/AYO/main/src/main.py -O "$AYO_DIR/main.py"
+    wget https://raw.githubusercontent.com/lisp3r/AYO/main/src/machine_data.json -O "$AYO_DIR/machine_data.json"
+    wget https://raw.githubusercontent.com/lisp3r/AYO/main/src/config.json -O "$AYO_DIR/config.json"
 
-    sudo cp "/home/$name/Documents/ayo/main.py" "/usr/bin/ayo" 
-    sudo chmod +x /usr/bin/ayo 
+    sudo ln -s "$AYO_DIR/main.py" "/usr/bin/ayo"
+    sudo chmod +x /usr/bin/ayo
 }
 
 end() {
