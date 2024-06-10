@@ -24,7 +24,8 @@ banner() {
   ░   ▒   ▒ ▒ ░░  ░ ░ ░ ▒  
       ░  ░░ ░         ░ ░  
           ░ ░
-${RESET}by ${ITALIC}@Trevohack${RESET}"
+${RESET}by ${ITALIC}@Trevohack${RESET}
+"
 }
 
 
@@ -32,9 +33,6 @@ init() {
     echo -e "[${GREEN}+${RESET}] Configuring Environment..."
     mkdir -p "$AYO_DIR"
     cd "$AYO_DIR"
-
-    # pip install rich
-    # pip install python-hosts
 }
 
 install() {
