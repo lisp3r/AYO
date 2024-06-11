@@ -38,8 +38,8 @@ def set_var_config(key_string, value):
 
     # For every key *before* the last one, we concentrate on navigating through the dictionary.
     for key in keys[:-1]:
-        # Try to find here[key]. If it doesn't exist, create it with an empty dictionary. Then,
-        # update our `here` pointer to refer to the thing we just found (or created).
+        # Try to find config_data[key]. If it doesn't exist, create it with an empty dictionary. Then,
+        # update our `config_data` pointer to refer to the thing we just found (or created).
         config_data = config_data.setdefault(key, {})
 
     # Finally, set the final key to the given value
@@ -197,8 +197,6 @@ def new_box(args):
 
 
 def get_info(args):
-    global data_file 
-
     data = get_box_data()
 
     if args.info in data:
@@ -208,8 +206,6 @@ def get_info(args):
 
 
 def set_info(args):
-    global data_file 
-
     data = get_box_data() 
     if args.var and args.value:
         data[args.var] = args.value
