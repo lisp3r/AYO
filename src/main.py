@@ -104,7 +104,8 @@ class Config:
 
 console = Console()
 
-BANNER = """
+def banner():
+    console.print("""
 [cyan]
  ▄▄▄·  ▄· ▄▌      
 ▐█ ▀█ ▐█▪██▌ ▄█▀▄ 
@@ -113,7 +114,7 @@ BANNER = """
  ▀  ▀   ▀ •  ▀█▄▀▪
 
 [/]                                              
-"""
+""")
 
 
 def get_box_data():
@@ -179,7 +180,9 @@ def config_validation(config: Config):
 def main():
     config_data = Config(os.path.join(dir_path, 'config.json'))
 
-    parser = argparse.ArgumentParser(description=f'{BANNER}AYO - CTF Manager [Help Menu]')
+    banner()
+
+    parser = argparse.ArgumentParser(description=f'AYO - CTF Manager [Help Menu]')
     subparsers = parser.add_subparsers(dest='command', help='Update or get data')
 
     parser_new = subparsers.add_parser('new', help='Add new CTF box')
