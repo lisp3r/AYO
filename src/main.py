@@ -167,7 +167,7 @@ def new_box(args):
 
     console.print(f"[green][+] Adding '{args.rhost}  {args.domain}' into /etc/hosts...[/]")
 
-    new_box = HostsEntry(entry_type='ipv4', address=args.rhost, names=[args.domain])
+    new_box = HostsEntry(entry_type='ipv4', address=args.rhost, names=[args.domain], comment="added by AYO")
     hosts = Hosts(path='/etc/hosts')
     hosts.add([new_box])
 
