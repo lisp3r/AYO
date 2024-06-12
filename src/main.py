@@ -177,7 +177,7 @@ def config_validation(config: Config):
 
 
 def main():
-    config_data = Config(os.path.join(dir_path, '../config.json'))
+    config_data = Config(os.path.join(dir_path, 'config.json'))
 
     parser = argparse.ArgumentParser(description=f'{BANNER}AYO - CTF Manager [Help Menu]')
     subparsers = parser.add_subparsers(dest='command', help='Update or get data')
