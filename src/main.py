@@ -117,8 +117,12 @@ BANNER = """
 
 
 def get_box_data():
-    with open(data_file, 'r') as file:
-        return json.load(file)
+    try:
+        with open(data_file, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError as err:
+        console.print(f'[red][!] {err}')
+        exit(1)
 
 
 def print_box_info():
